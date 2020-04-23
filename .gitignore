@@ -1,0 +1,16 @@
+# Android/IntelliJ
+build/
+.idea
+.gradle
+local.properties
+*.iml
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# node.js
+node_modules/
+
+# Bundle artifact
+*.jsbundle
