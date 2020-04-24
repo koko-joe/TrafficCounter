@@ -9,8 +9,9 @@
  */
 
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
+import {SafeAreaView, StyleSheet, ScrollView, View, Text, Button} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import * as FileSystem from 'react-native-fs';
 
 const App = () => {
   const [carCount, setCarCount] = useState(0);
@@ -48,6 +49,18 @@ const App = () => {
           <Text style={styles.sectionContent}>
             Total: {carCount + truckCount + otherVehicleCount}
           </Text>
+          <Button
+            title="Save"
+            onPress={() => saveToFile(carCount, truckCount, otherVehicleCount)}
+          />
+          <Button
+            title="Reset"
+            onPress={() => {
+              setCarCount(0);
+              setTruckCount(0);
+              setOtherVehicleCount(0);
+            }}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -73,6 +86,26 @@ function decrementCount(count: number): number {
   return count - 1;
 }
 
+function saveToFile(carCount: number, truckCount: number, otherVehicleCount: number): void {
+  const header: string = 'Car,Truck,Else,Total,Date';
+  let content: string = header + '\n';
+  const totalCount: number = carCount + truckCount + otherVehicleCount;
+  const currentTime: Date = new Date();
+  content += `${carCount},${truckCount},${otherVehicleCount},${totalCount},${currentTime.toISOString()}`;
+  FileSystem.writeFile(getFilePath(currentTime), content);
+}
+
+function getFilePath(currentTime: Date) {
+  const year: number = currentTime.getFullYear();
+  const month: number = currentTime.getMonth();
+  const day: number = currentTime.getDate();
+  const hour: number = currentTime.getHours();
+  const minute: number = currentTime.getMinutes();
+  const fileName: string = `traffic-counter_${year}-${month}-${day}_${hour}-${minute}.csv`;
+
+  return FileSystem.ExternalDirectoryPath + '/' + fileName;
+}
+
 const styles = StyleSheet.create({
   appContainer: {
     backgroundColor: Colors.white,
@@ -86,7 +119,7 @@ const styles = StyleSheet.create({
   },
   sectionContent: {
     marginTop: 8,
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '400',
     color: Colors.dark,
   },
