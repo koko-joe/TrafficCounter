@@ -8,110 +8,87 @@
  * @format
  */
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-declare const global: {HermesInternal: null | {}};
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
+  const [carCount, setCarCount] = useState(0);
+  const [truckCount, setTruckCount] = useState(0);
+  const [otherVehicleCount, setOtherVehicleCount] = useState(0);
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.tsx</Text> to change
-                this screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <SafeAreaView style={styles.appContainer}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionContent}>
+            <Text onPress={() => setCarCount(decrementCount(carCount))}> - </Text>
+            Cars
+            <Text onPress={() => setCarCount(incrementCount(carCount))}> + </Text>
+          </Text>
+          <Text style={styles.sectionContent}>Count: {carCount}</Text>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionContent}>
+            <Text onPress={() => setTruckCount(decrementCount(truckCount))}> - </Text>
+            Trucks
+            <Text onPress={() => setTruckCount(incrementCount(truckCount))}> + </Text>
+          </Text>
+          <Text style={styles.sectionContent}>Count: {truckCount}</Text>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionContent}>
+            <Text onPress={() => setOtherVehicleCount(decrementCount(otherVehicleCount))}> - </Text>
+            Else
+            <Text onPress={() => setOtherVehicleCount(incrementCount(otherVehicleCount))}> + </Text>
+          </Text>
+          <Text style={styles.sectionContent}>Count: {otherVehicleCount}</Text>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionContent}>
+            Total: {carCount + truckCount + otherVehicleCount}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
+/**
+ * Increament the given number + 1.
+ */
+function incrementCount(count: number): number {
+  return count + 1;
+}
+
+/**
+ * Decrements the given number - 1.
+ * The result won't fall under 0.
+ */
+function decrementCount(count: number): number {
+  if (count < 1) {
+    return 0;
+  }
+
+  return count - 1;
+}
+
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
+  appContainer: {
     backgroundColor: Colors.white,
+    flex: 1,
   },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
+  sectionContent: {
     marginTop: 8,
-    fontSize: 18,
+    fontSize: 36,
     fontWeight: '400',
     color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 
