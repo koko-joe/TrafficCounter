@@ -1,15 +1,20 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
+ * Main component & SPA starting point.
  *
  * @format
  */
 
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Text, Button} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  Button,
+  NativeSyntheticEvent,
+  ToastAndroid,
+} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import * as FileSystem from 'react-native-fs';
 
@@ -17,6 +22,30 @@ const App = () => {
   const [carCount, setCarCount] = useState(0);
   const [truckCount, setTruckCount] = useState(0);
   const [otherVehicleCount, setOtherVehicleCount] = useState(0);
+  const [isWritingFile, setIsWritingFile] = useState(false);
+
+  const resetCounter: Function = () => {
+    setCarCount(0);
+    setTruckCount(0);
+    setOtherVehicleCount(0);
+  };
+
+  const pressSaveReset: (ev: NativeSyntheticEvent<TouchEvent>) => void = () => {
+    setIsWritingFile(true);
+    const currentTime: Date = new Date();
+    saveToFile(carCount, truckCount, otherVehicleCount, currentTime)
+      .then(() => {
+        resetCounter();
+        ToastAndroid.show(
+          `File has been written to: ${getFilePath(currentTime)}`,
+          ToastAndroid.SHORT
+        );
+        setIsWritingFile(false);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.appContainer}>
@@ -49,18 +78,7 @@ const App = () => {
           <Text style={styles.sectionContent}>
             Total: {carCount + truckCount + otherVehicleCount}
           </Text>
-          <Button
-            title="Save"
-            onPress={() => saveToFile(carCount, truckCount, otherVehicleCount)}
-          />
-          <Button
-            title="Reset"
-            onPress={() => {
-              setCarCount(0);
-              setTruckCount(0);
-              setOtherVehicleCount(0);
-            }}
-          />
+          <Button title="Save & Reset" disabled={isWritingFile} onPress={pressSaveReset} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -86,15 +104,27 @@ function decrementCount(count: number): number {
   return count - 1;
 }
 
-function saveToFile(carCount: number, truckCount: number, otherVehicleCount: number): void {
+/**
+ * Save the vehicle counts into a CSV file.
+ */
+function saveToFile(
+  carCount: number,
+  truckCount: number,
+  otherVehicleCount: number,
+  currentTime: Date
+): Promise<void> {
   const header: string = 'Car,Truck,Else,Total,Date';
   let content: string = header + '\n';
   const totalCount: number = carCount + truckCount + otherVehicleCount;
-  const currentTime: Date = new Date();
   content += `${carCount},${truckCount},${otherVehicleCount},${totalCount},${currentTime.toISOString()}`;
-  FileSystem.writeFile(getFilePath(currentTime), content);
+
+  return FileSystem.writeFile(getFilePath(currentTime), content);
 }
 
+/**
+ * The file path including file name to store the counter.
+ * The file name includes a date to easier identify files when uploading them somewhere else.
+ */
 function getFilePath(currentTime: Date) {
   const year: number = currentTime.getFullYear();
   const month: number = currentTime.getMonth();
@@ -106,6 +136,7 @@ function getFilePath(currentTime: Date) {
   return FileSystem.ExternalDirectoryPath + '/' + fileName;
 }
 
+// basic app styling
 const styles = StyleSheet.create({
   appContainer: {
     backgroundColor: Colors.white,
