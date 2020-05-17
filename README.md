@@ -1,6 +1,6 @@
 # TrafficCounter
 
-Weekly project from [https://weeklyproject.club/](https://weeklyproject.club/) (week 16 2020)
+Weekly project from [https://weeklyproject.club/](https://weeklyproject.club/) (week 17 2020)
 
 A simple app to count vehicles.
 The vehicle types are hard coded.
